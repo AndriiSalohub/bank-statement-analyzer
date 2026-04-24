@@ -9,9 +9,9 @@ interface FileItemProps {
 
 const FileItem: FC<FileItemProps> = ({ file, formatFileSize, onDelete }) => {
   return (
-    <li className="flex flex-col items-start justify-start p-4 mt-4 relative bg-card border w-full rounded-md shadow-sm animate-in fade-in duration-500">
+    <li className="flex flex-col p-4 mt-4 bg-card border rounded-md shadow-sm animate-in fade-in duration-500">
       <div className="flex justify-between w-full items-center gap-4">
-        <p className="text-sm font-semibold text-foreground truncate max-w-xs">
+        <p className="text-sm font-semibold text-foreground truncate max-w-sm">
           {file.name}
         </p>
         <div className="flex gap-2 items-center">

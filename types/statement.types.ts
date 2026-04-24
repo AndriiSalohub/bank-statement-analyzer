@@ -6,13 +6,15 @@ export interface PaprseCSVProps {
   onError: (errors: TransactionParcingError[]) => void;
 }
 
+export interface TopCounterparty {
+  counterparty: string;
+  amount: number;
+}
+
 export interface TransactionsSummary {
   totalIncome: number;
   totalExpense: number;
   transactionsCount: number;
   netResult: number;
-  topFiveCounterparties: {
-    counterparty: string;
-    amount: number;
-  }[];
+  topFiveCounterparties: TopCounterparty[];
 }

@@ -1,5 +1,7 @@
 'use client';
+
 import SummaryCards from '@/components/dashboard/summary-cards.component';
+import TopCounterparties from '@/components/dashboard/top-counterparties.component';
 import FileUploadMotion from '@/components/file-upload/file-upload-card.component';
 import { calculateTransactionsSummary } from '@/lib/statement';
 import { Transaction } from '@/types/transaction.types';
@@ -30,10 +32,13 @@ const Home = () => {
     setUploadedFiles((prev) => prev.filter((_, index) => index !== fileIndex));
   };
 
-  const { totalIncome, totalExpense, netResult, transactionsCount } = useMemo(
-    () => calculateTransactionsSummary(transactions),
-    [transactions]
-  );
+  const {
+    totalIncome,
+    totalExpense,
+    netResult,
+    transactionsCount,
+    topFiveCounterparties,
+  } = useMemo(() => calculateTransactionsSummary(transactions), [transactions]);
 
   return (
     <main className="p-6 space-y-6">
@@ -49,6 +54,10 @@ const Home = () => {
         totalExpense={totalExpense}
         transactionsCount={transactionsCount}
         netResult={netResult}
+        isLoading={isLoading}
+      />
+      <TopCounterparties
+        topCounterparties={topFiveCounterparties}
         isLoading={isLoading}
       />
     </main>
