@@ -1,9 +1,12 @@
-import { FC, useRef } from 'react';
+import { FC, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import FileItem from './file-item.component';
 import DropZone from './drop-zone.component';
 import { toast } from 'sonner';
-import { Transaction } from '@/types/transaction.types';
+import {
+  Transaction,
+  TransactionParcingError,
+} from '@/types/transaction.types';
 import { parseCSV } from '@/lib/statement';
 
 interface FileUploadProps {
@@ -21,6 +24,8 @@ const FileUpload: FC<FileUploadProps> = ({
   isLoading,
   setIsLoading,
 }) => {
+  const [skippedRows, setSkippedRows] = useState<number>(0);
+  const [errors, setErrors] = useState<TransactionParcingError[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (newFiles: File[]) => {
@@ -44,6 +49,7 @@ const FileUpload: FC<FileUploadProps> = ({
           onDataLoaded?.(data, file);
 
           if (skipped > 0) {
+            setSkippedRows(skipped);
             toast.warning(`${skipped} rows skipped`);
           } else {
             toast.success('File successfully loaded');
@@ -51,7 +57,7 @@ const FileUpload: FC<FileUploadProps> = ({
         },
         onError: (errors) => {
           setIsLoading(false);
-          console.error('Errors:', errors);
+          setErrors(errors);
         },
       });
     } else {
@@ -107,6 +113,8 @@ const FileUpload: FC<FileUploadProps> = ({
               file={file}
               formatFileSize={formatFileSize}
               onDelete={() => onDelete(index)}
+              skipped={skippedRows}
+              errors={errors}
             />
           ))}
         </ul>
