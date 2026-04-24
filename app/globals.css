@@ -81,7 +81,6 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  --font-sans: Optima, Candara, 'Noto Sans', source-sans-pro, sans-serif;
 }
 
 .dark {
@@ -121,8 +120,6 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
   }
   body {
     @apply bg-background text-foreground;
@@ -131,4 +128,3 @@
     @apply font-sans;
   }
 }
-

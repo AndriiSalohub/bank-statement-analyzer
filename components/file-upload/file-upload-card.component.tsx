@@ -7,6 +7,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Transaction } from '@/types/transaction.types';
+import { calculateTransactionsSummary } from '@/lib/statement';
 
 const FileUploadMotion = () => {
   const [transactions, setTransations] = useState<Transaction[]>([]);
@@ -31,6 +32,7 @@ const FileUploadMotion = () => {
 
   useEffect(() => {
     console.log(transactions);
+    console.log(calculateTransactionsSummary(transactions));
   }, [uploadedFiles, transactions]);
 
   return (

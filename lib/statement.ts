@@ -1,5 +1,5 @@
 import { TransactionSchema } from '@/schemas/transaction.schema';
-import { PaprseCSVProps } from '@/types/statement.types';
+import { PaprseCSVProps, TransactionsSummary } from '@/types/statement.types';
 import {
   Transaction,
   TransactionType,
@@ -22,7 +22,7 @@ export const parseCSV = ({ file, onSuccess, onError }: PaprseCSVProps) => {
         parsedResults.push({
           ...data,
           type:
-            data.amount > 0 ? TransactionType.INCOME : TransactionType.INCOME,
+            data.amount > 0 ? TransactionType.INCOME : TransactionType.EXPENSE,
           sourceFileName: file.name,
         });
       } else {
@@ -41,4 +41,48 @@ export const parseCSV = ({ file, onSuccess, onError }: PaprseCSVProps) => {
       }
     },
   });
+};
+
+export const calculateTransactionsSummary = (
+  transactions: Transaction[]
+): TransactionsSummary => {
+  const counterparties = new Map<string, number>();
+
+  const transactionsSummary = transactions.reduce(
+    (acc, transaction) => {
+      if (transaction.type === TransactionType.INCOME) {
+        acc.totalIncome += transaction.amount;
+      } else {
+        const absAmount = Math.abs(transaction.amount);
+        acc.totalExpense += absAmount;
+
+        const currentAmount = counterparties.get(transaction.counterparty) || 0;
+        counterparties.set(transaction.counterparty, currentAmount + absAmount);
+      }
+
+      return acc;
+    },
+    {
+      totalIncome: 0,
+      totalExpense: 0,
+    }
+  );
+
+  const topFiveCounterparties = Array.from(
+    counterparties,
+    ([counterparty, amount]) => ({
+      counterparty,
+      amount,
+    })
+  )
+    .sort((a, b) => b.amount - a.amount)
+    .slice(0, 5);
+
+  return {
+    ...transactionsSummary,
+    transactionsCount: transactions.length,
+    netResult:
+      transactionsSummary.totalIncome - transactionsSummary.totalExpense,
+    topFiveCounterparties,
+  };
 };
