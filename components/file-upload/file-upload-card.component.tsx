@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { FC } from 'react';
 import FileUpload from './file-upload.component';
 import {
   Card,
@@ -7,34 +7,22 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Transaction } from '@/types/transaction.types';
-import { calculateTransactionsSummary } from '@/lib/statement';
 
-const FileUploadMotion = () => {
-  const [transactions, setTransations] = useState<Transaction[]>([]);
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+interface FileUploadMotionProps {
+  uploadedFiles: File[];
+  onDataLoaded: (newTransactions: Transaction[], file: File) => void;
+  onDelete: (fileIndex: number) => void;
+  isLoading: boolean;
+  setIsLoading: (isLoading: boolean) => void;
+}
 
-  const handleFileUpload = (data: Transaction[], file: File) => {
-    setTransations((prevTransactions) => [...prevTransactions, ...data]);
-    setUploadedFiles((prevFiles) => [...prevFiles, file]);
-  };
-
-  const handleDeleteFile = (fileIndex: number) => {
-    const fileToRemove = uploadedFiles[fileIndex];
-
-    setTransations((prevTransactions) => [
-      ...prevTransactions.filter(
-        (transaction) => transaction.sourceFileName !== fileToRemove.name
-      ),
-    ]);
-
-    setUploadedFiles((prev) => prev.filter((_, index) => index !== fileIndex));
-  };
-
-  useEffect(() => {
-    console.log(transactions);
-    console.log(calculateTransactionsSummary(transactions));
-  }, [uploadedFiles, transactions]);
-
+const FileUploadMotion: FC<FileUploadMotionProps> = ({
+  uploadedFiles,
+  onDataLoaded,
+  onDelete,
+  isLoading,
+  setIsLoading,
+}) => {
   return (
     <Card className="w-full max-w-4xl mx-auto mt-4 sm:mt-10 px-2 sm:px-4">
       <CardHeader>
@@ -44,9 +32,11 @@ const FileUploadMotion = () => {
         </CardDescription>
       </CardHeader>
       <FileUpload
-        onDataLoaded={handleFileUpload}
-        onDelete={handleDeleteFile}
+        onDataLoaded={onDataLoaded}
+        onDelete={onDelete}
         files={uploadedFiles}
+        isLoading={isLoading}
+        setIsLoading={setIsLoading}
       />
     </Card>
   );

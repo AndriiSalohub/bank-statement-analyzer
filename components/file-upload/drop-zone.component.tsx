@@ -6,9 +6,14 @@ import { Button } from '@/components/ui/button';
 interface DropZoneProps {
   isDragActive: boolean;
   onClick: () => void;
+  disabled: boolean;
 }
 
-export const DropZone: FC<DropZoneProps> = ({ isDragActive, onClick }) => (
+export const DropZone: FC<DropZoneProps> = ({
+  isDragActive,
+  onClick,
+  disabled = false,
+}) => (
   <div
     onClick={onClick}
     className={cn(
@@ -36,7 +41,12 @@ export const DropZone: FC<DropZoneProps> = ({ isDragActive, onClick }) => (
       <p className="text-xs text-muted-foreground">or select it manually</p>
     </div>
 
-    <Button type="button" variant="outline" className="mt-1">
+    <Button
+      type="button"
+      variant="outline"
+      className="mt-1"
+      disabled={disabled}
+    >
       Browse File
     </Button>
   </div>

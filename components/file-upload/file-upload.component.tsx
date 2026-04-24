@@ -1,4 +1,4 @@
-import { FC, useRef, useState } from 'react';
+import { FC, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import FileItem from './file-item.component';
 import DropZone from './drop-zone.component';
@@ -10,10 +10,17 @@ interface FileUploadProps {
   onDataLoaded?: (data: Transaction[], file: File) => void;
   onDelete: (fileIndex: number) => void;
   files: File[];
+  isLoading: boolean;
+  setIsLoading: (isLoading: boolean) => void;
 }
 
-const FileUpload: FC<FileUploadProps> = ({ onDataLoaded, onDelete, files }) => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+const FileUpload: FC<FileUploadProps> = ({
+  onDataLoaded,
+  onDelete,
+  files,
+  isLoading,
+  setIsLoading,
+}) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (newFiles: File[]) => {
@@ -84,7 +91,11 @@ const FileUpload: FC<FileUploadProps> = ({ onDataLoaded, onDelete, files }) => {
         className="hidden"
       />
 
-      <DropZone isDragActive={isDragActive} onClick={handleClick} />
+      <DropZone
+        isDragActive={isDragActive}
+        onClick={handleClick}
+        disabled={isLoading}
+      />
 
       {isLoading && <p>Analyzing file data...</p>}
 
