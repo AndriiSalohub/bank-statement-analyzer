@@ -3,23 +3,55 @@ import { useDropzone } from 'react-dropzone';
 import FileItem from './file-item.component';
 import DropZone from './drop-zone.component';
 import { toast } from 'sonner';
+import { Transaction } from '@/types/transaction.types';
+import { parseCSV } from '@/lib/statement';
 
 interface FileUploadProps {
-  onChange?: (files: File[]) => void;
+  onDataLoaded?: (data: Transaction[], file: File) => void;
+  onDelete: (fileIndex: number) => void;
+  files: File[];
 }
 
-const FileUpload: FC<FileUploadProps> = ({ onChange }) => {
-  const [files, setFiles] = useState<File[]>([]);
+const FileUpload: FC<FileUploadProps> = ({ onDataLoaded, onDelete, files }) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (newFiles: File[]) => {
-    const updatedFiles = [...files, ...newFiles];
-    setFiles(updatedFiles);
-    onChange?.(updatedFiles);
-  };
+    if (newFiles.length === 0) {
+      return;
+    }
 
-  const handleFileDelete = (fileIndex: number) => {
-    setFiles((prev) => prev.filter((_, index) => index !== fileIndex));
+    const file = newFiles[0];
+
+    const isSameFileExists = files.some(
+      (uploadedFile) => uploadedFile.name === file.name
+    );
+
+    if (!isSameFileExists) {
+      setIsLoading(true);
+
+      parseCSV({
+        file,
+        onSuccess: (data, skipped) => {
+          setIsLoading(false);
+          onDataLoaded?.(data, file);
+
+          if (skipped > 0) {
+            toast.warning(`${skipped} rows skipped`);
+          } else {
+            toast.success('File successfully loaded');
+          }
+        },
+        onError: (errors) => {
+          setIsLoading(false);
+          console.error('Errors:', errors);
+        },
+      });
+    } else {
+      toast.error('A file with that name has already been uploaded', {
+        description: 'Please choose another file or delete the previous one.',
+      });
+    }
   };
 
   const handleClick = () => {
@@ -34,7 +66,9 @@ const FileUpload: FC<FileUploadProps> = ({ onChange }) => {
       'text/csv': ['.csv'],
     },
     onDropRejected: () => {
-      toast.error('Please upload only CSV files.');
+      toast.error(
+        'Please upload only CSV files and only one file can be uploaded at a time.'
+      );
     },
   });
 
@@ -51,6 +85,9 @@ const FileUpload: FC<FileUploadProps> = ({ onChange }) => {
       />
 
       <DropZone isDragActive={isDragActive} onClick={handleClick} />
+
+      {isLoading && <p>Analyzing file data...</p>}
+
       {files.length > 0 && (
         <ul className="space-y-3">
           {files.map((file, index) => (
@@ -58,7 +95,7 @@ const FileUpload: FC<FileUploadProps> = ({ onChange }) => {
               key={file.name + index}
               file={file}
               formatFileSize={formatFileSize}
-              onDelete={() => handleFileDelete(index)}
+              onDelete={() => onDelete(index)}
             />
           ))}
         </ul>
