@@ -15,3 +15,5 @@ export interface TransactionParcingError {
   row?: number;
   message: string;
 }
+
+export type TransactionFilterType = 'All' | TransactionType;

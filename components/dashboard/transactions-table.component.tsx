@@ -1,5 +1,8 @@
-import { TransactionType } from '@/types/transaction.types';
-import { FC, useState } from 'react';
+import {
+  TransactionFilterType,
+  TransactionType,
+} from '@/types/transaction.types';
+import { FC, useEffect, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -12,6 +15,8 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { getPageNumbers } from '@/lib/pagination';
 import { useTransactions } from '@/context/transaction.context';
+import { useDebounce } from '@/hooks/use-debounce.hook';
+import TransactionsTableHeader from './transactions-table-header.component';
 
 interface TransactionsTableProps {
   pageSize?: number;
@@ -21,16 +26,38 @@ const TransactionsTable: FC<TransactionsTableProps> = ({ pageSize = 15 }) => {
   const { transactions, isLoading } = useTransactions();
 
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const totalPages = Math.ceil(transactions.length / pageSize);
+  const [transactionType, setTransactionType] =
+    useState<TransactionFilterType>('All');
+  const [search, setSearch] = useState<string>('');
+  const debouncedSearch = useDebounce(search);
+
+  useEffect(() => setCurrentPage(1), [debouncedSearch, transactionType]);
+
+  const filteredTransactions = transactions.filter((transaction) => {
+    const matchTransactionTypeFilter =
+      transactionType === 'All' || transaction.type === transactionType;
+
+    const matchSearch =
+      transaction.counterparty.toLowerCase().includes(debouncedSearch) ||
+      transaction.description.toLowerCase().includes(debouncedSearch);
+
+    return matchTransactionTypeFilter && matchSearch;
+  });
+
+  const totalPages = Math.ceil(filteredTransactions.length / pageSize);
   const start = (currentPage - 1) * pageSize;
-  const pageRows = transactions.slice(start, start + pageSize);
+  const pageRows = filteredTransactions.slice(start, start + pageSize);
 
   return (
     <section className="space-y-3">
-      <div className="mb-3">
-        <h2 className="text-xl font-semibold ">Transactions</h2>
-        <p>{transactions.length} records</p>
-      </div>
+      <TransactionsTableHeader
+        search={search}
+        onSearchChange={setSearch}
+        transactionType={transactionType}
+        onTransactionTypeChange={setTransactionType}
+        totalCount={transactions.length}
+        filteredCount={filteredTransactions.length}
+      />
 
       <Table>
         <TableHeader>
