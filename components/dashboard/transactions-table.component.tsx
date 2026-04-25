@@ -1,4 +1,4 @@
-import { Transaction, TransactionType } from '@/types/transaction.types';
+import { TransactionType } from '@/types/transaction.types';
 import { FC, useState } from 'react';
 import {
   Table,
@@ -11,18 +11,15 @@ import {
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { getPageNumbers } from '@/lib/pagination';
+import { useTransactions } from '@/context/transaction.context';
 
 interface TransactionsTableProps {
-  transactions: Transaction[];
   pageSize?: number;
-  isLoading: boolean;
 }
 
-const TransactionsTable: FC<TransactionsTableProps> = ({
-  transactions,
-  pageSize = 15,
-  isLoading,
-}) => {
+const TransactionsTable: FC<TransactionsTableProps> = ({ pageSize = 15 }) => {
+  const { transactions, isLoading } = useTransactions();
+
   const [currentPage, setCurrentPage] = useState<number>(1);
   const totalPages = Math.ceil(transactions.length / pageSize);
   const start = (currentPage - 1) * pageSize;

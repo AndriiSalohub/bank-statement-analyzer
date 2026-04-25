@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import {
@@ -7,22 +6,13 @@ import {
   HandCoins,
   Landmark,
 } from 'lucide-react';
+import { useTransactions } from '@/context/transaction.context';
 
-interface SummaryCardsProps {
-  totalIncome: number;
-  totalExpense: number;
-  transactionsCount: number;
-  netResult: number;
-  isLoading: boolean;
-}
+const SummaryCards = () => {
+  const { isLoading, transactionsSummary } = useTransactions();
+  const { totalIncome, totalExpense, netResult, transactionsCount } =
+    transactionsSummary;
 
-const SummaryCards: FC<SummaryCardsProps> = ({
-  totalIncome,
-  totalExpense,
-  transactionsCount,
-  netResult,
-  isLoading,
-}) => {
   const netColor = netResult > 0 ? 'text-green-600' : 'text-red-600';
 
   const cards = [

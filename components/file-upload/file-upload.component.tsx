@@ -1,29 +1,21 @@
-import { FC, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import FileItem from './file-item.component';
 import DropZone from './drop-zone.component';
 import { toast } from 'sonner';
-import {
-  Transaction,
-  TransactionParcingError,
-} from '@/types/transaction.types';
+import { TransactionParcingError } from '@/types/transaction.types';
 import { parseCSV } from '@/lib/statement';
+import { useTransactions } from '@/context/transaction.context';
 
-interface FileUploadProps {
-  onDataLoaded?: (data: Transaction[], file: File) => void;
-  onDelete: (fileIndex: number) => void;
-  files: File[];
-  isLoading: boolean;
-  setIsLoading: (isLoading: boolean) => void;
-}
+const FileUpload = () => {
+  const {
+    uploadedFiles,
+    handleFileUpload,
+    handleDeleteFile,
+    isLoading,
+    setIsLoading,
+  } = useTransactions();
 
-const FileUpload: FC<FileUploadProps> = ({
-  onDataLoaded,
-  onDelete,
-  files,
-  isLoading,
-  setIsLoading,
-}) => {
   const [skippedRows, setSkippedRows] = useState<number>(0);
   const [errors, setErrors] = useState<TransactionParcingError[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -35,7 +27,7 @@ const FileUpload: FC<FileUploadProps> = ({
 
     const file = newFiles[0];
 
-    const isSameFileExists = files.some(
+    const isSameFileExists = uploadedFiles.some(
       (uploadedFile) => uploadedFile.name === file.name
     );
 
@@ -46,7 +38,7 @@ const FileUpload: FC<FileUploadProps> = ({
         file,
         onSuccess: (data, skipped) => {
           setIsLoading(false);
-          onDataLoaded?.(data, file);
+          handleFileUpload(data, file);
 
           if (skipped > 0) {
             setSkippedRows(skipped);
@@ -105,14 +97,14 @@ const FileUpload: FC<FileUploadProps> = ({
 
       {isLoading && <p>Analyzing file data...</p>}
 
-      {files.length > 0 && (
+      {uploadedFiles.length > 0 && (
         <ul className="space-y-3">
-          {files.map((file, index) => (
+          {uploadedFiles.map((file, index) => (
             <FileItem
               key={file.name + index}
               file={file}
               formatFileSize={formatFileSize}
-              onDelete={() => onDelete(index)}
+              onDelete={() => handleDeleteFile(index)}
               skipped={skippedRows}
               errors={errors}
             />

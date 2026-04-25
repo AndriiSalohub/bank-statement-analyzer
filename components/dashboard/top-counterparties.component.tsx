@@ -1,16 +1,10 @@
-import { TopCounterparty } from '@/types/statement.types';
-import { FC } from 'react';
+import { useTransactions } from '@/context/transaction.context';
 
-interface TopCounterpartiesProps {
-  topCounterparties: TopCounterparty[];
-  isLoading: boolean;
-}
+const TopCounterparties = () => {
+  const { transactionsSummary, isLoading } = useTransactions();
+  const { topFiveCounterparties } = transactionsSummary;
 
-const TopCounterparties: FC<TopCounterpartiesProps> = ({
-  topCounterparties,
-  isLoading,
-}) => {
-  const isEmpty = topCounterparties.length === 0;
+  const isEmpty = topFiveCounterparties.length === 0;
 
   return (
     <section>
@@ -21,7 +15,7 @@ const TopCounterparties: FC<TopCounterpartiesProps> = ({
         ) : isEmpty ? (
           <p>No counterparties found</p>
         ) : (
-          topCounterparties.map((topCounterparty) => (
+          topFiveCounterparties.map((topCounterparty) => (
             <li
               key={topCounterparty.counterparty}
               className="flex flex-col p-4 mt-4 bg-card border rounded-md shadow-sm animate-in fade-in duration-500"

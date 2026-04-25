@@ -1,8 +1,12 @@
 import { calculateTransactionsSummary } from '@/lib/statement';
 import { Transaction } from '@/types/transaction.types';
-import { useMemo, useState } from 'react';
+import { createContext, ReactNode, useContext, useMemo, useState } from 'react';
 
-export const useTransactions = () => {
+export const TransactionContext = createContext<ReturnType<
+  typeof useTransactionsState
+> | null>(null);
+
+const useTransactionsState = () => {
   const [transactions, setTransations] = useState<Transaction[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -33,11 +37,36 @@ export const useTransactions = () => {
   );
 
   return {
+    transactions,
     uploadedFiles,
-    isLoading,
-    setIsLoading,
-    transactionsSummary,
     handleFileUpload,
     handleDeleteFile,
+    transactionsSummary,
+    isLoading,
+    setIsLoading,
   };
+};
+
+export const useTransactions = () => {
+  const context = useContext(TransactionContext);
+
+  if (!context) {
+    throw new Error('useTransactions must be used with a TransactionContext');
+  }
+
+  return context;
+};
+
+export const TransactionContextProvider = ({
+  children,
+}: {
+  children: ReactNode;
+}) => {
+  const value = useTransactionsState();
+
+  return (
+    <TransactionContext.Provider value={value}>
+      {children}
+    </TransactionContext.Provider>
+  );
 };
