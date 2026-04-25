@@ -1,51 +1,20 @@
-import { calculateTransactionsSummary } from '@/lib/statement';
+import { TransactionsSummary } from '@/types/statement.types';
 import { Transaction } from '@/types/transaction.types';
-import { createContext, ReactNode, useContext, useMemo, useState } from 'react';
+import { createContext, useContext } from 'react';
 
-export const TransactionContext = createContext<ReturnType<
-  typeof useTransactionsState
-> | null>(null);
+interface TransactionContextType {
+  transactions: Transaction[];
+  uploadedFiles: File[];
+  handleFileUpload: (newTransactions: Transaction[], file: File) => void;
+  handleDeleteFile: (fileIndex: number) => void;
+  transactionsSummary: TransactionsSummary;
+  isLoading: boolean;
+  setIsLoading: (loading: boolean) => void;
+}
 
-const useTransactionsState = () => {
-  const [transactions, setTransations] = useState<Transaction[]>([]);
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const handleFileUpload = (newTransactions: Transaction[], file: File) => {
-    setTransations((prevTransactions) => [
-      ...prevTransactions,
-      ...newTransactions,
-    ]);
-    setUploadedFiles((prevFiles) => [...prevFiles, file]);
-  };
-
-  const handleDeleteFile = (fileIndex: number) => {
-    const fileToRemove = uploadedFiles[fileIndex];
-
-    setTransations((prevTransactions) => [
-      ...prevTransactions.filter(
-        (transaction) => transaction.sourceFileName !== fileToRemove.name
-      ),
-    ]);
-
-    setUploadedFiles((prev) => prev.filter((_, index) => index !== fileIndex));
-  };
-
-  const transactionsSummary = useMemo(
-    () => calculateTransactionsSummary(transactions),
-    [transactions]
-  );
-
-  return {
-    transactions,
-    uploadedFiles,
-    handleFileUpload,
-    handleDeleteFile,
-    transactionsSummary,
-    isLoading,
-    setIsLoading,
-  };
-};
+export const TransactionContext = createContext<TransactionContextType | null>(
+  null
+);
 
 export const useTransactions = () => {
   const context = useContext(TransactionContext);
@@ -55,18 +24,4 @@ export const useTransactions = () => {
   }
 
   return context;
-};
-
-export const TransactionContextProvider = ({
-  children,
-}: {
-  children: ReactNode;
-}) => {
-  const value = useTransactionsState();
-
-  return (
-    <TransactionContext.Provider value={value}>
-      {children}
-    </TransactionContext.Provider>
-  );
 };

@@ -6,7 +6,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 
-const FileUploadMotion = () => {
+const FileUploadCard = () => {
   return (
     <Card className="w-full max-w-4xl mx-auto mt-4 sm:mt-10 px-2 sm:px-4">
       <CardHeader>
@@ -20,4 +20,4 @@ const FileUploadMotion = () => {
   );
 };
 
-export default FileUploadMotion;
+export default FileUploadCard;

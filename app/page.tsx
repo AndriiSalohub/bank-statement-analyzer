@@ -3,19 +3,19 @@
 import SummaryCards from '@/components/dashboard/summary-cards.component';
 import TopCounterparties from '@/components/dashboard/top-counterparties.component';
 import TransactionsTable from '@/components/dashboard/transactions-table.component';
-import FileUploadMotion from '@/components/file-upload/file-upload-card.component';
-import { TransactionContextProvider } from '@/context/transaction.context';
+import FileUploadCard from '@/components/file-upload/file-upload-card.component';
+import TransactionProvider from '@/components/providers/transaction-provider.component';
 
 const Home = () => {
   return (
-    <TransactionContextProvider>
+    <TransactionProvider>
       <main className="p-6 space-y-6">
-        <FileUploadMotion />
+        <FileUploadCard />
         <SummaryCards />
         <TopCounterparties />
         <TransactionsTable />
       </main>
-    </TransactionContextProvider>
+    </TransactionProvider>
   );
 };
 
