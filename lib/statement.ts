@@ -28,6 +28,7 @@ export const parseCSV = ({ file, onSuccess, onError }: PaprseCSVProps) => {
       } else {
         skippedCount++;
         errors.push({
+          sourceFileName: file.name,
           row: results.errors[0].row,
           message: validation.error.message,
         });

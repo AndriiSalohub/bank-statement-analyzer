@@ -43,7 +43,8 @@ const FileItem: FC<FileItemProps> = ({
         </div>
       </div>
 
-      {errors.length > 0 && (
+      {errors.filter((error) => error.sourceFileName === file.name).length >
+        0 && (
         <Accordion>
           <AccordionItem>
             <AccordionTrigger className="cursor-pointer text-base">

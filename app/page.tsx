@@ -9,7 +9,7 @@ import TransactionProvider from '@/components/providers/transaction-provider.com
 const Home = () => {
   return (
     <TransactionProvider>
-      <main className="p-6 space-y-6">
+      <main className="px-6 space-y-6">
         <FileUploadCard />
         <SummaryCards />
         <TopCounterparties />

@@ -11,12 +11,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { getPageNumbers } from '@/lib/pagination';
 import { useTransactions } from '@/context/transaction.context';
 import { useDebounce } from '@/hooks/use-debounce.hook';
 import TransactionsTableHeader from './transactions-table-header.component';
+import TransactionsPagiation from './transactions-pagination.component';
 
 interface TransactionsTableProps {
   pageSize?: number;
@@ -116,33 +115,11 @@ const TransactionsTable: FC<TransactionsTableProps> = ({ pageSize = 15 }) => {
       </Table>
 
       {totalPages > 1 && (
-        <div className="flex justify-center">
-          <div className="flex items-center gap-1">
-            <Button
-              onClick={() => setCurrentPage((prevPage) => prevPage - 1)}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </Button>
-            {getPageNumbers(currentPage, totalPages).map((page, index) => (
-              <Button
-                key={index}
-                variant={currentPage === page ? 'secondary' : 'outline'}
-                disabled={page === '...'}
-                onClick={() => typeof page === 'number' && setCurrentPage(page)}
-                className={cn(page === '...' && 'border-none')}
-              >
-                {page}
-              </Button>
-            ))}
-            <Button
-              onClick={() => setCurrentPage((prevPage) => prevPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </Button>
-          </div>
-        </div>
+        <TransactionsPagiation
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       )}
     </section>
   );

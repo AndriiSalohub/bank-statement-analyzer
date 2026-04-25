@@ -12,6 +12,7 @@ export type Transaction = z.infer<typeof TransactionSchema> & {
 };
 
 export interface TransactionParcingError {
+  sourceFileName: string;
   row?: number;
   message: string;
 }
