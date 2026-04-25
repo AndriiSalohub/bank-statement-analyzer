@@ -2,6 +2,7 @@
 
 import SummaryCards from '@/components/dashboard/summary-cards.component';
 import TopCounterparties from '@/components/dashboard/top-counterparties.component';
+import TransactionsTable from '@/components/dashboard/transactions-table.component';
 import FileUploadMotion from '@/components/file-upload/file-upload-card.component';
 import { calculateTransactionsSummary } from '@/lib/statement';
 import { Transaction } from '@/types/transaction.types';
@@ -60,6 +61,7 @@ const Home = () => {
         topCounterparties={topFiveCounterparties}
         isLoading={isLoading}
       />
+      <TransactionsTable transactions={transactions} isLoading={isLoading} />
     </main>
   );
 };

@@ -17,7 +17,7 @@ const TopCounterparties: FC<TopCounterpartiesProps> = ({
       <h2 className="text-xl font-semibold mb-3">Top Counterparties</h2>
       <ul className="bg-card border w-full rounded-md shadow-sm p-4">
         {isLoading ? (
-          <p>Loading counterparties</p>
+          <p>Loading counterparties...</p>
         ) : isEmpty ? (
           <p>No counterparties found</p>
         ) : (
