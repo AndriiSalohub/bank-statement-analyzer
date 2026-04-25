@@ -2,7 +2,7 @@ import {
   TransactionFilterType,
   TransactionType,
 } from '@/types/transaction.types';
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -31,8 +31,6 @@ const TransactionsTable: FC<TransactionsTableProps> = ({ pageSize = 15 }) => {
   const [search, setSearch] = useState<string>('');
   const debouncedSearch = useDebounce(search);
 
-  useEffect(() => setCurrentPage(1), [debouncedSearch, transactionType]);
-
   const filteredTransactions = transactions.filter((transaction) => {
     const matchTransactionTypeFilter =
       transactionType === 'All' || transaction.type === transactionType;
@@ -48,13 +46,23 @@ const TransactionsTable: FC<TransactionsTableProps> = ({ pageSize = 15 }) => {
   const start = (currentPage - 1) * pageSize;
   const pageRows = filteredTransactions.slice(start, start + pageSize);
 
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    setCurrentPage(1);
+  };
+
+  const handleTransactionTypeChange = (value: TransactionFilterType) => {
+    setTransactionType(value);
+    setCurrentPage(1);
+  };
+
   return (
     <section className="space-y-3">
       <TransactionsTableHeader
         search={search}
-        onSearchChange={setSearch}
+        onSearchChange={handleSearchChange}
         transactionType={transactionType}
-        onTransactionTypeChange={setTransactionType}
+        onTransactionTypeChange={handleTransactionTypeChange}
         totalCount={transactions.length}
         filteredCount={filteredTransactions.length}
       />
